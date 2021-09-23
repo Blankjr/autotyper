@@ -9,6 +9,7 @@ import windowsapps
 import os
 import subprocess
 import pydirectinput
+import win32gui
 
 
 class Ui_MainWindow(object):
@@ -127,12 +128,25 @@ class Ui_MainWindow(object):
         curent_t = time.currentTime()
         print(curent_t.toString())
 
-    def stop_typing(self):
-        stopped = True
-
-    def typing(self):
+    def openNotepad(self):
         # os.system('notepad')
         subprocess.Popen("C:\\Windows\\System32\\notepad.exe")
+        time.sleep(0.3)
+        results = []
+        top_windows = []
+        win32gui.EnumWindows(self.windowEnumerationHandler, top_windows)
+        for i in top_windows:
+            if "untitled - notepad" in i[1].lower():
+                print(i)
+                win32gui.ShowWindow(i[0], 5)
+                win32gui.SetForegroundWindow(i[0])
+                break
+
+    def windowEnumerationHandler(self, hwnd, top_windows):
+        top_windows.append((hwnd, win32gui.GetWindowText(hwnd)))
+
+    def typing(self):
+        self.openNotepad()
         counterTime = self.timeEdit_setTimer.time().toString()
         times = counterTime.split(':')
         print(times)
